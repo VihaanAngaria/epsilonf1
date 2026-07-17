@@ -8,76 +8,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a24;
-            --bg-card-hover: #22222e;
-            --accent-red: #e10600;
-            --accent-red-glow: rgba(225, 6, 0, 0.3);
-            --accent-silver: #c0c0c0;
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --border: #2a2a3a;
-            --border-hover: #3a3a4e;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --live: #ef4444;
-            --font-display: 'Orbitron', sans-serif;
-            --font-body: 'Inter', sans-serif;
+            --bg-primary: #0a0a0f; --bg-secondary: #12121a; --bg-card: #1a1a24; --bg-card-hover: #22222e;
+            --accent-red: #e10600; --accent-red-glow: rgba(225, 6, 0, 0.3); --accent-silver: #c0c0c0;
+            --text-primary: #ffffff; --text-secondary: #9ca3af; --text-muted: #6b7280;
+            --border: #2a2a3a; --border-hover: #3a3a4e; --success: #22c55e; --warning: #f59e0b; --live: #ef4444;
+            --font-display: 'Orbitron', sans-serif; --font-body: 'Inter', sans-serif;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image:
-                linear-gradient(rgba(225, 6, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(225, 6, 0, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(225, 6, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(225, 6, 0, 0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+        
         .nav { position: sticky; top: 0; z-index: 100; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
         .nav-inner { max-width: 1400px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
         .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
         .logo-icon { width: 40px; height: 40px; background: var(--accent-red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 18px; color: white; box-shadow: 0 0 20px var(--accent-red-glow); }
         .logo-text { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: 1px; }
         .logo-text span { color: var(--accent-red); }
-
         .nav-links { display: flex; gap: 8px; }
         .nav-link { padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; cursor: pointer; }
         .nav-link:hover, .nav-link.active { background: var(--bg-card); color: var(--text-primary); }
-
         .live-badge { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; color: var(--live); font-size: 13px; font-weight: 600; animation: pulse-live 2s infinite; }
         .live-dot { width: 8px; height: 8px; background: var(--live); border-radius: 50%; }
-
         @keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         .main { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 24px; }
-        .page { display: none; }
-        .page.active { display: block; }
-
+        .page { display: none; } .page.active { display: block; }
         .hero { margin-bottom: 32px; }
         .hero-title { font-family: var(--font-display); font-size: 36px; font-weight: 900; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, var(--accent-silver) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero-subtitle { color: var(--text-secondary); font-size: 16px; }
-
         .loading-state { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 40px; color: var(--text-muted); font-size: 14px; }
         .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
         .section-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
         .section-title::before { content: ''; width: 4px; height: 24px; background: var(--accent-red); border-radius: 2px; }
@@ -103,7 +64,6 @@
         .player-badge { padding: 4px 12px; background: rgba(225, 6, 0, 0.15); border: 1px solid rgba(225, 6, 0, 0.3); border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--accent-red); }
 
         .player-frame { position: relative; background: #000; aspect-ratio: 16/9; }
-        
         #streamIframe { width: 100%; height: 100%; border: none; display: block; }
 
         /* Adblock Overlays to cover provider ads & controls */
@@ -111,7 +71,7 @@
         .ad-overlay.top { top: 0; height: 40px; }
         .ad-overlay.bottom { bottom: 0; height: 45px; }
 
-        /* Custom Fullscreen Button (Floating so it sits above the bottom overlay) */
+        /* Custom Fullscreen Button */
         .btn-fullscreen {
             position: absolute;
             bottom: 10px;
@@ -168,11 +128,7 @@
         .error-message { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; color: var(--live); text-align: center; font-size: 14px; }
 
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hero-title { font-size: 24px; }
-            .countdown-digits { font-size: 22px; }
-            .main { padding: 16px; }
-            .countdown-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; } .hero-title { font-size: 24px; } .countdown-digits { font-size: 22px; } .main { padding: 16px; } .countdown-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -322,27 +278,10 @@
         let countdownInterval = null;
 
         const flagMap = {
-            'Australia': '🇦🇺', 'China': '🇨🇳', 'Japan': '🇯🇵', 'Bahrain': '🇧🇭',
-            'Saudi Arabia': '🇸🇦', 'USA': '🇺🇸', 'United States': '🇺🇸', 'Italy': '🇮🇹',
-            'Monaco': '🇲🇨', 'Spain': '🇪🇸', 'Canada': '🇨🇦', 'Austria': '🇦🇹',
-            'UK': '🇬🇧', 'United Kingdom': '🇬🇧', 'Great Britain': '🇬🇧', 'Belgium': '🇧🇪',
-            'Hungary': '🇭🇺', 'Netherlands': '🇳🇱', 'Azerbaijan': '🇦🇿', 'Singapore': '🇸🇬',
-            'Mexico': '🇲🇽', 'Brazil': '🇧🇷', 'Qatar': '🇶🇦', 'UAE': '🇦🇪',
-            'United Arab Emirates': '🇦🇪', 'Abu Dhabi': '🇦🇪', 'Las Vegas': '🇺🇸',
-            'Miami': '🇺🇸', 'Austin': '🇺🇸', 'Imola': '🇮🇹', 'Monza': '🇮🇹',
-            'Suzuka': '🇯🇵', 'Sakhir': '🇧🇭', 'Jeddah': '🇸🇦', 'Spielberg': '🇦🇹',
-            'Silverstone': '🇬🇧', 'Spa': '🇧🇪', 'Budapest': '🇭🇺', 'Zandvoort': '🇳🇱',
-            'Baku': '🇦🇿', 'Shanghai': '🇨🇳', 'Melbourne': '🇦🇺', 'Montreal': '🇨🇦',
-            'Barcelona': '🇪🇸', 'Monte Carlo': '🇲🇨', 'Lusail': '🇶🇦', 'Yas Marina': '🇦🇪',
-            'Sao Paulo': '🇧🇷', 'Mexico City': '🇲🇽'
+            'Australia': '🇦🇺', 'China': '🇨🇳', 'Japan': '🇯🇵', 'Bahrain': '🇧🇭', 'Saudi Arabia': '🇸🇦', 'USA': '🇺🇸', 'United States': '🇺🇸', 'Italy': '🇮🇹', 'Monaco': '🇲🇨', 'Spain': '🇪🇸', 'Canada': '🇨🇦', 'Austria': '🇦🇹', 'UK': '🇬🇧', 'United Kingdom': '🇬🇧', 'Great Britain': '🇬🇧', 'Belgium': '🇧🇪', 'Hungary': '🇭🇺', 'Netherlands': '🇳🇱', 'Azerbaijan': '🇦🇿', 'Singapore': '🇸🇬', 'Mexico': '🇲🇽', 'Brazil': '🇧🇷', 'Qatar': '🇶🇦', 'UAE': '🇦🇪', 'United Arab Emirates': '🇦🇪', 'Abu Dhabi': '🇦🇪', 'Las Vegas': '🇺🇸', 'Miami': '🇺🇸', 'Austin': '🇺🇸', 'Imola': '🇮🇹', 'Monza': '🇮🇹', 'Suzuka': '🇯🇵', 'Sakhir': '🇧🇭', 'Jeddah': '🇸🇦', 'Spielberg': '🇦🇹', 'Silverstone': '🇬🇧', 'Spa': '🇧🇪', 'Budapest': '🇭🇺', 'Zandvoort': '🇳🇱', 'Baku': '🇦🇿', 'Shanghai': '🇨🇳', 'Melbourne': '🇦🇺', 'Montreal': '🇨🇦', 'Barcelona': '🇪🇸', 'Monte Carlo': '🇲🇨', 'Lusail': '🇶🇦', 'Yas Marina': '🇦🇪', 'Sao Paulo': '🇧🇷', 'Mexico City': '🇲🇽'
         };
 
-        function getFlag(location) {
-            for (const [key, flag] of Object.entries(flagMap)) {
-                if (location.includes(key)) return flag;
-            }
-            return '🏁';
-        }
+        function getFlag(location) { for (const [key, flag] of Object.entries(flagMap)) { if (location.includes(key)) return flag; } return '🏁'; }
 
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -355,23 +294,13 @@
         async function fetchCalendar() {
             const cacheKey = `f1_cal_${CURRENT_SEASON}`;
             const cached = localStorage.getItem(cacheKey);
-            
-            if (cached) {
-                try {
-                    f1Calendar = JSON.parse(cached);
-                    autoSelectRace();
-                    renderCountdown();
-                    renderFullSchedule();
-                    initPlayer();
-                } catch (e) {}
-            }
+            if (cached) { try { f1Calendar = JSON.parse(cached); autoSelectRace(); renderCountdown(); renderFullSchedule(); initPlayer(); } catch (e) {} }
 
             try {
                 const response = await fetch(`${API_BASE}/${CURRENT_SEASON}.json`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 const races = data.MRData.RaceTable.Races;
-
                 if (!races || races.length === 0) throw new Error('No races found');
 
                 f1Calendar = races.map(race => {
@@ -379,148 +308,59 @@
                     const location = circuit.Location;
                     const raceDate = new Date(race.date + 'T' + (race.time || '15:00:00Z'));
                     const raceTime = raceDate.getTime();
-
-                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); 
-                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);  
-                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); 
-                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);  
-
                     return {
-                        round: parseInt(race.round),
-                        name: race.raceName,
-                        location: `${location.locality}, ${location.country}`,
-                        flag: getFlag(location.locality + ' ' + location.country),
-                        circuit: circuit.circuitName,
-                        circuitId: circuit.circuitId,
-                        laps: getEstimatedLaps(circuit.circuitId),
-                        length: getCircuitLength(circuit.circuitId),
-                        lapRecord: getLapRecord(circuit.circuitId),
+                        round: parseInt(race.round), name: race.raceName, location: `${location.locality}, ${location.country}`,
+                        flag: getFlag(location.locality + ' ' + location.country), circuit: circuit.circuitName, circuitId: circuit.circuitId,
+                        laps: getEstimatedLaps(circuit.circuitId), length: getCircuitLength(circuit.circuitId), lapRecord: getLapRecord(circuit.circuitId),
                         sessions: {
-                            fp1: new Date(fp1Time).toISOString(),
-                            fp2: new Date(fp2Time).toISOString(),
-                            fp3: new Date(fp3Time).toISOString(),
-                            qualifying: new Date(qualTime).toISOString(),
+                            fp1: new Date(raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000)).toISOString(),
+                            fp2: new Date(raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000)).toISOString(),
+                            fp3: new Date(raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000)).toISOString(),
+                            qualifying: new Date(raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000)).toISOString(),
                             race: raceDate.toISOString()
                         }
                     };
                 });
 
                 localStorage.setItem(cacheKey, JSON.stringify(f1Calendar));
-                autoSelectRace();
-                renderCountdown();
-                renderFullSchedule();
-                startCountdown();
-                initPlayer();
-
+                autoSelectRace(); renderCountdown(); renderFullSchedule(); startCountdown(); initPlayer();
             } catch (error) {
                 console.error('Failed to fetch calendar:', error);
-                if (!cached) {
-                    document.getElementById('countdownContent').innerHTML = `<div class="error-message">⚠️ Failed to load F1 calendar data.<br>${error.message}</div>`;
-                }
+                if (!cached) document.getElementById('countdownContent').innerHTML = `<div class="error-message">⚠️ Failed to load F1 calendar data.<br>${error.message}</div>`;
             }
         }
 
         async function fetchStandings() {
             try {
-                const [drvRes, conRes] = await Promise.all([
-                    fetch(`${API_BASE}/${CURRENT_SEASON}/driverStandings.json`),
-                    fetch(`${API_BASE}/${CURRENT_SEASON}/constructorStandings.json`)
-                ]);
-
-                const drvData = await drvRes.json();
-                const conData = await conRes.json();
-
+                const [drvRes, conRes] = await Promise.all([ fetch(`${API_BASE}/${CURRENT_SEASON}/driverStandings.json`), fetch(`${API_BASE}/${CURRENT_SEASON}/constructorStandings.json`) ]);
+                const drvData = await drvRes.json(); const conData = await conRes.json();
                 const drivers = drvData.MRData.StandingsTable.StandingsLists[0].DriverStandings;
                 const constructors = conData.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
 
-                let html = `<div class="info-card" style="margin-bottom: 24px;">
-                    <div class="info-card-title">Drivers Championship</div>
-                    <table class="standings-table">
-                        <thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Points</th></tr></thead>
-                        <tbody>`;
-
-                drivers.forEach(d => {
-                    html += `<tr>
-                        <td class="pos-cell">${d.position}</td>
-                        <td>${d.Driver.givenName} ${d.Driver.familyName}</td>
-                        <td>${d.Constructors[0].name}</td>
-                        <td class="points-cell">${d.points}</td>
-                    </tr>`;
-                });
-
-                html += `</tbody></table></div>
-
-                <div class="info-card">
-                    <div class="info-card-title">Constructors Championship</div>
-                    <table class="standings-table">
-                        <thead><tr><th>Pos</th><th>Team</th><th>Points</th></tr></thead>
-                        <tbody>`;
-
-                constructors.forEach(c => {
-                    html += `<tr>
-                        <td class="pos-cell">${c.position}</td>
-                        <td>${c.Constructor.name}</td>
-                        <td class="points-cell">${c.points}</td>
-                    </tr>`;
-                });
-
+                let html = `<div class="info-card" style="margin-bottom: 24px;"><div class="info-card-title">Drivers Championship</div><table class="standings-table"><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Points</th></tr></thead><tbody>`;
+                drivers.forEach(d => { html += `<tr><td class="pos-cell">${d.position}</td><td>${d.Driver.givenName} ${d.Driver.familyName}</td><td>${d.Constructors[0].name}</td><td class="points-cell">${d.points}</td></tr>`; });
+                html += `</tbody></table></div><div class="info-card"><div class="info-card-title">Constructors Championship</div><table class="standings-table"><thead><tr><th>Pos</th><th>Team</th><th>Points</th></tr></thead><tbody>`;
+                constructors.forEach(c => { html += `<tr><td class="pos-cell">${c.position}</td><td>${c.Constructor.name}</td><td class="points-cell">${c.points}</td></tr>`; });
                 html += `</tbody></table></div>`;
                 document.getElementById('standingsContent').innerHTML = html;
-
             } catch (error) {
                 document.getElementById('standingsContent').innerHTML = `<div class="error-message">⚠️ Failed to load standings.<br>${error.message}</div>`;
             }
         }
 
-        function getEstimatedLaps(circuitId) {
-            const laps = { 'albert_park': 58, 'shanghai': 56, 'suzuka': 53, 'bahrain': 57, 'jeddah': 50, 'miami': 57, 'imola': 63, 'monaco': 78, 'catalunya': 66, 'villeneuve': 70, 'red_bull_ring': 71, 'silverstone': 52, 'spa': 44, 'hungaroring': 70, 'zandvoort': 72, 'monza': 53, 'baku': 51, 'marina_bay': 62, 'americas': 56, 'rodriguez': 71, 'interlagos': 71, 'vegas': 50, 'losail': 57, 'yas_marina': 58 };
-            return laps[circuitId] || 55;
-        }
+        function getEstimatedLaps(circuitId) { const laps = { 'albert_park': 58, 'shanghai': 56, 'suzuka': 53, 'bahrain': 57, 'jeddah': 50, 'miami': 57, 'imola': 63, 'monaco': 78, 'catalunya': 66, 'villeneuve': 70, 'red_bull_ring': 71, 'silverstone': 52, 'spa': 44, 'hungaroring': 70, 'zandvoort': 72, 'monza': 53, 'baku': 51, 'marina_bay': 62, 'americas': 56, 'rodriguez': 71, 'interlagos': 71, 'vegas': 50, 'losail': 57, 'yas_marina': 58 }; return laps[circuitId] || 55; }
+        function getCircuitLength(circuitId) { const lengths = { 'albert_park': '5.278', 'shanghai': '5.451', 'suzuka': '5.807', 'bahrain': '5.412', 'jeddah': '6.174', 'miami': '5.412', 'imola': '4.909', 'monaco': '3.337', 'catalunya': '4.657', 'villeneuve': '4.361', 'red_bull_ring': '4.318', 'silverstone': '5.891', 'spa': '7.004', 'hungaroring': '4.381', 'zandvoort': '4.259', 'monza': '5.793', 'baku': '6.003', 'marina_bay': '4.940', 'americas': '5.513', 'rodriguez': '4.304', 'interlagos': '4.309', 'vegas': '6.201', 'losail': '5.419', 'yas_marina': '5.281' }; return lengths[circuitId] || '5.000'; }
+        function getLapRecord(circuitId) { const records = { 'albert_park': '1:20.235 (Leclerc, 2024)', 'shanghai': '1:32.238 (Hamilton, 2024)', 'suzuka': '1:28.452 (Verstappen, 2024)', 'bahrain': '1:31.447 (De la Rosa, 2005)', 'jeddah': '1:30.734 (Hamilton, 2021)', 'miami': '1:29.708 (Verstappen, 2024)', 'imola': '1:15.484 (Hamilton, 2020)', 'monaco': '1:12.909 (Hamilton, 2021)', 'catalunya': '1:16.330 (Verstappen, 2024)', 'villeneuve': '1:13.078 (Norris, 2024)', 'red_bull_ring': '1:05.619 (Verstappen, 2024)', 'silverstone': '1:27.097 (Verstappen, 2024)', 'spa': '1:44.701 (Hamilton, 2024)', 'hungaroring': '1:16.609 (Hamilton, 2020)', 'zandvoort': '1:11.097 (Verstappen, 2024)', 'monza': '1:21.046 (Barrichello, 2004)', 'baku': '1:43.009 (Leclerc, 2024)', 'marina_bay': '1:34.486 (Magnussen, 2018)', 'americas': '1:36.169 (Verstappen, 2024)', 'rodriguez': '1:17.774 (Verstappen, 2024)', 'interlagos': '1:10.540 (Hamilton, 2024)', 'vegas': '1:34.876 (Leclerc, 2024)', 'losail': '1:24.319 (Verstappen, 2024)', 'yas_marina': '1:26.103 (Verstappen, 2024)' }; return records[circuitId] || '—'; }
 
-        function getCircuitLength(circuitId) {
-            const lengths = { 'albert_park': '5.278', 'shanghai': '5.451', 'suzuka': '5.807', 'bahrain': '5.412', 'jeddah': '6.174', 'miami': '5.412', 'imola': '4.909', 'monaco': '3.337', 'catalunya': '4.657', 'villeneuve': '4.361', 'red_bull_ring': '4.318', 'silverstone': '5.891', 'spa': '7.004', 'hungaroring': '4.381', 'zandvoort': '4.259', 'monza': '5.793', 'baku': '6.003', 'marina_bay': '4.940', 'americas': '5.513', 'rodriguez': '4.304', 'interlagos': '4.309', 'vegas': '6.201', 'losail': '5.419', 'yas_marina': '5.281' };
-            return lengths[circuitId] || '5.000';
-        }
-
-        function getLapRecord(circuitId) {
-            const records = { 'albert_park': '1:20.235 (Leclerc, 2024)', 'shanghai': '1:32.238 (Hamilton, 2024)', 'suzuka': '1:28.452 (Verstappen, 2024)', 'bahrain': '1:31.447 (De la Rosa, 2005)', 'jeddah': '1:30.734 (Hamilton, 2021)', 'miami': '1:29.708 (Verstappen, 2024)', 'imola': '1:15.484 (Hamilton, 2020)', 'monaco': '1:12.909 (Hamilton, 2021)', 'catalunya': '1:16.330 (Verstappen, 2024)', 'villeneuve': '1:13.078 (Norris, 2024)', 'red_bull_ring': '1:05.619 (Verstappen, 2024)', 'silverstone': '1:27.097 (Verstappen, 2024)', 'spa': '1:44.701 (Hamilton, 2024)', 'hungaroring': '1:16.609 (Hamilton, 2020)', 'zandvoort': '1:11.097 (Verstappen, 2024)', 'monza': '1:21.046 (Barrichello, 2004)', 'baku': '1:43.009 (Leclerc, 2024)', 'marina_bay': '1:34.486 (Magnussen, 2018)', 'americas': '1:36.169 (Verstappen, 2024)', 'rodriguez': '1:17.774 (Verstappen, 2024)', 'interlagos': '1:10.540 (Hamilton, 2024)', 'vegas': '1:34.876 (Leclerc, 2024)', 'losail': '1:24.319 (Verstappen, 2024)', 'yas_marina': '1:26.103 (Verstappen, 2024)' };
-            return records[circuitId] || '—';
-        }
-
-        function formatCountdown(ms) {
-            if (ms <= 0) return { finished: true, text: "FINISHED", days: 0, hours: 0, minutes: 0, seconds: 0 };
-            const days = Math.floor(ms / 86400000);
-            const hours = Math.floor((ms % 86400000) / 3600000);
-            const minutes = Math.floor((ms % 3600000) / 60000);
-            const seconds = Math.floor((ms % 60000) / 1000);
-            return { finished: false, text: `${days}d ${hours}h ${minutes}m ${seconds}s`, days, hours, minutes, seconds };
-        }
-
-        function getSessionStatus(sessionTime) {
-            const now = Date.now();
-            const start = new Date(sessionTime).getTime();
-            const end = start + (90 * 60 * 1000);
-            if (now < start) return 'upcoming';
-            if (now >= start && now <= end) return 'live';
-            return 'completed';
-        }
-
-        function getSessionDisplayName(name) {
-            const names = { fp1: 'Free Practice 1', fp2: 'Free Practice 2', fp3: 'Free Practice 3', sprintQuali: 'Sprint Qualifying', sprint: 'Sprint Race', qualifying: 'Qualifying', race: 'Grand Prix' };
-            return names[name] || name.toUpperCase();
-        }
-
-        function formatLocalTime(utcString) {
-            const d = new Date(utcString);
-            return d.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
-        }
+        function formatCountdown(ms) { if (ms <= 0) return { finished: true, text: "FINISHED" }; const days = Math.floor(ms / 86400000); const hours = Math.floor((ms % 86400000) / 3600000); const minutes = Math.floor((ms % 3600000) / 60000); const seconds = Math.floor((ms % 60000) / 1000); return { finished: false, text: `${days}d ${hours}h ${minutes}m ${seconds}s` }; }
+        function getSessionStatus(sessionTime) { const now = Date.now(); const start = new Date(sessionTime).getTime(); const end = start + (90 * 60 * 1000); if (now < start) return 'upcoming'; if (now >= start && now <= end) return 'live'; return 'completed'; }
+        function getSessionDisplayName(name) { const names = { fp1: 'Free Practice 1', fp2: 'Free Practice 2', fp3: 'Free Practice 3', sprintQuali: 'Sprint Qualifying', sprint: 'Sprint Race', qualifying: 'Qualifying', race: 'Grand Prix' }; return names[name] || name.toUpperCase(); }
+        function formatLocalTime(utcString) { const d = new Date(utcString); return d.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }); }
 
         function renderCountdown() {
             if (f1Calendar.length === 0) return;
             const race = f1Calendar[selectedRaceIndex];
             const now = Date.now();
-            const container = document.getElementById('countdownContent');
-
             document.getElementById('raceTitle').textContent = race.name;
             document.getElementById('raceSubtitle').textContent = `${race.flag} ${race.location} • Round ${race.round}`;
             document.getElementById('trackFlag').textContent = race.flag;
@@ -531,41 +371,25 @@
             document.getElementById('trackRecord').textContent = race.lapRecord;
 
             const sessions = Object.entries(race.sessions).sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
-
             let html = '<div class="countdown-grid" style="margin-bottom: 32px;">';
             let hasLive = false;
-
             sessions.forEach(([name, time]) => {
                 const status = getSessionStatus(time);
                 const isFinished = status === 'completed';
                 const diff = new Date(time).getTime() - now;
-
                 let countdownText, extraClass = '';
                 if (isFinished) { countdownText = '<span class="finished-text" style="color:var(--success)">✓ COMPLETED</span>'; extraClass = 'finished'; } 
                 else if (status === 'live') { countdownText = '<span style="color: var(--live)">🔴 LIVE NOW</span>'; extraClass = 'active'; } 
                 else { countdownText = formatCountdown(diff).text; }
-
                 if (status === 'live') hasLive = true;
-
-                html += `<div class="countdown-card ${extraClass}">
-                    <div class="session-label">${getSessionDisplayName(name)}</div>
-                    <div class="countdown-digits">${countdownText}</div>
-                    <div class="countdown-labels"><span>${formatLocalTime(time)}</span></div>
-                    <div class="session-status ${status}">${status.toUpperCase()}</div>
-                </div>`;
+                html += `<div class="countdown-card ${extraClass}"><div class="session-label">${getSessionDisplayName(name)}</div><div class="countdown-digits">${countdownText}</div><div class="countdown-labels"><span>${formatLocalTime(time)}</span></div><div class="session-status ${status}">${status.toUpperCase()}</div></div>`;
             });
-
             html += '</div>';
-            container.innerHTML = html;
+            document.getElementById('countdownContent').innerHTML = html;
 
-            const scheduleList = document.getElementById('scheduleList');
-            scheduleList.innerHTML = sessions.map(([name, time]) => {
+            document.getElementById('scheduleList').innerHTML = sessions.map(([name, time]) => {
                 const status = getSessionStatus(time);
-                return `<div class="schedule-item ${status === 'live' ? 'active' : ''}">
-                    <div class="schedule-time">${new Date(time).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true})}</div>
-                    <div class="schedule-name">${getSessionDisplayName(name)}</div>
-                    <div class="schedule-date">${new Date(time).toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</div>
-                </div>`;
+                return `<div class="schedule-item ${status === 'live' ? 'active' : ''}"><div class="schedule-time">${new Date(time).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true})}</div><div class="schedule-name">${getSessionDisplayName(name)}</div><div class="schedule-date">${new Date(time).toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</div></div>`;
             }).join('');
 
             const liveStatus = document.getElementById('liveStatus');
@@ -575,23 +399,10 @@
 
         function renderFullSchedule() {
             if (f1Calendar.length === 0) return;
-            const container = document.getElementById('fullScheduleContent');
-            let html = `<table class="full-schedule-table">
-                <thead><tr><th>Rnd</th><th>Grand Prix</th><th>Circuit</th><th>Date</th></tr></thead>
-                <tbody>`;
-            
-            f1Calendar.forEach(race => {
-                const raceDate = new Date(race.sessions.race).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                html += `<tr>
-                    <td class="pos-cell">${race.round}</td>
-                    <td>${race.flag} ${race.name}</td>
-                    <td>${race.circuit}</td>
-                    <td>${raceDate}</td>
-                </tr>`;
-            });
-
+            let html = `<table class="full-schedule-table"><thead><tr><th>Rnd</th><th>Grand Prix</th><th>Circuit</th><th>Date</th></tr></thead><tbody>`;
+            f1Calendar.forEach(race => { html += `<tr><td class="pos-cell">${race.round}</td><td>${race.flag} ${race.name}</td><td>${race.circuit}</td><td>${new Date(race.sessions.race).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</td></tr>`; });
             html += '</tbody></table>';
-            container.innerHTML = html;
+            document.getElementById('fullScheduleContent').innerHTML = html;
         }
 
         function initPlayer() {
@@ -617,19 +428,8 @@
             }
         }
 
-        function autoSelectRace() {
-            const now = Date.now();
-            for (let i = 0; i < f1Calendar.length; i++) {
-                const raceEnd = new Date(f1Calendar[i].sessions.race).getTime() + (120 * 60 * 1000);
-                if (now < raceEnd) { selectedRaceIndex = i; break; }
-            }
-        }
-
-        function startCountdown() {
-            if (countdownInterval) clearInterval(countdownInterval);
-            renderCountdown();
-            countdownInterval = setInterval(renderCountdown, 1000);
-        }
+        function autoSelectRace() { const now = Date.now(); for (let i = 0; i < f1Calendar.length; i++) { if (now < new Date(f1Calendar[i].sessions.race).getTime() + (120 * 60 * 1000)) { selectedRaceIndex = i; break; } } }
+        function startCountdown() { if (countdownInterval) clearInterval(countdownInterval); renderCountdown(); countdownInterval = setInterval(renderCountdown, 1000); }
 
         fetchCalendar();
         fetchStandings();
