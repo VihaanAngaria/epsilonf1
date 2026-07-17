@@ -1,11 +1,5 @@
-The error in your code is caused by two things:
-1. A leftover artifact at the very top of the file (`{Pasted%20Content_1784298944437.txt：`).
-2. A stray closing curly brace `}` at the very bottom of the script, which causes a Python `SyntaxError` since it doesn't belong to any block of code.
 
-Here is the fully fixed and cleaned-up code:
-
-```python
-html_content = '''<!DOCTYPE html>
+html_content = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -798,25 +792,20 @@ html_content = '''<!DOCTYPE html>
                     throw new Error('No races found for current season');
                 }
 
-                f1Calendar = races.map((race, index) => {
+                f1Calendar = races.map((race) => {
                     const circuit = race.Circuit;
                     const location = circuit.Location;
                     const country = location.country;
                     const locality = location.locality;
 
-                    // Build session times from race date + typical F1 weekend schedule
-                    // FP1: Friday ~10:30-12:00 local, FP2: Friday ~14:00-15:30 local
-                    // FP3: Saturday ~10:30-11:30 local, Qualifying: Saturday ~15:00-16:00 local
-                    // Race: Sunday ~15:00 local (varies by timezone)
                     const raceDate = new Date(race.date + 'T' + (race.time || '15:00:00Z'));
                     const raceTime = raceDate.getTime();
 
-                    // Estimate session times (2-3 hours before race day, typical F1 schedule)
-                    // These are approximations — for precise times you'd need a more detailed API
-                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); // Fri ~10:30
-                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);  // Fri ~14:00
-                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); // Sat ~10:30
-                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);  // Sat ~15:00
+                    // Estimate session times using standard F1 weekend schedule
+                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000);
+                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);
+                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000);
+                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);
 
                     return {
                         round: parseInt(race.round),
@@ -857,7 +846,7 @@ html_content = '''<!DOCTYPE html>
             }
         }
 
-        // Circuit data estimates (since API doesn't provide all details)
+        // Circuit data estimates
         function getEstimatedLaps(circuitId) {
             const laps = {
                 'albert_park': 58, 'shanghai': 56, 'suzuka': 53, 'bahrain': 57,
@@ -1134,5 +1123,4 @@ html_content = '''<!DOCTYPE html>
 with open('/mnt/agents/output/index.html', 'w') as f:
     f.write(html_content)
 
-print(f"✅ index.html saved! ({len(html_content):,} chars)")
-```
+print(f"✅ Clean index.html saved! ({len(html_content):,} chars)")
