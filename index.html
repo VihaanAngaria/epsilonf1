@@ -169,6 +169,26 @@ html_content = '''<!DOCTYPE html>
             font-size: 16px;
         }
 
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .countdown-section { margin-bottom: 32px; }
 
         .section-header {
@@ -587,6 +607,16 @@ html_content = '''<!DOCTYPE html>
             margin-bottom: 8px;
         }
 
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--live);
+            text-align: center;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero-title { font-size: 24px; }
@@ -619,7 +649,7 @@ html_content = '''<!DOCTYPE html>
     <main class="main">
         <section class="hero">
             <h1 class="hero-title" id="raceTitle">Loading...</h1>
-            <p class="hero-subtitle" id="raceSubtitle">Select a race to view countdown</p>
+            <p class="hero-subtitle" id="raceSubtitle">Fetching live F1 calendar data...</p>
         </section>
 
         <section class="countdown-section">
@@ -627,7 +657,12 @@ html_content = '''<!DOCTYPE html>
                 <h2 class="section-title">Race Weekend</h2>
                 <div class="race-selector" id="raceSelector"></div>
             </div>
-            <div class="countdown-grid" id="countdownGrid"></div>
+            <div id="countdownContent">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Loading race calendar from Jolpica F1 API...</span>
+                </div>
+            </div>
         </section>
 
         <section class="player-section">
@@ -675,7 +710,7 @@ html_content = '''<!DOCTYPE html>
                 <div class="track-info">
                     <div class="track-flag" id="trackFlag">🏁</div>
                     <div class="track-details">
-                        <h3 id="trackName">Select a race</h3>
+                        <h3 id="trackName">Loading...</h3>
                         <p id="trackLocation">—</p>
                         <div class="track-meta">
                             <div class="track-meta-item">
@@ -704,427 +739,166 @@ html_content = '''<!DOCTYPE html>
 
     <footer class="footer">
         <div class="footer-brand">EpsilonF1</div>
-        <p>Independent Formula 1 coverage platform. Not affiliated with Formula 1 or FIA.</p>
+        <p>Data provided by Jolpica F1 API • Not affiliated with Formula 1 or FIA</p>
     </footer>
 
     <script>
         // ═══════════════════════════════════════════════════════════════════
-        // 2026 F1 CALENDAR DATA — Update dates as season progresses
+        // JOLPICA F1 API — Free, no API key needed
+        // Fetches real F1 calendar data automatically
         // ═══════════════════════════════════════════════════════════════════
-        const f1Calendar = [
-            {
-                round: 1,
-                name: "Australian Grand Prix",
-                location: "Melbourne, Australia",
-                flag: "🇦🇺",
-                circuit: "Albert Park Circuit",
-                laps: 58,
-                length: "5.278",
-                lapRecord: "1:20.235 (Leclerc, 2024)",
-                sessions: {
-                    fp1: "2026-03-13T01:30:00Z",
-                    fp2: "2026-03-13T05:00:00Z",
-                    fp3: "2026-03-14T01:30:00Z",
-                    qualifying: "2026-03-14T05:00:00Z",
-                    race: "2026-03-15T04:00:00Z"
-                }
-            },
-            {
-                round: 2,
-                name: "Chinese Grand Prix",
-                location: "Shanghai, China",
-                flag: "🇨🇳",
-                circuit: "Shanghai International Circuit",
-                laps: 56,
-                length: "5.451",
-                lapRecord: "1:32.238 (Hamilton, 2024)",
-                sessions: {
-                    fp1: "2026-03-20T03:30:00Z",
-                    sprintQuali: "2026-03-20T07:30:00Z",
-                    sprint: "2026-03-21T03:00:00Z",
-                    qualifying: "2026-03-21T07:00:00Z",
-                    race: "2026-03-22T07:00:00Z"
-                }
-            },
-            {
-                round: 3,
-                name: "Japanese Grand Prix",
-                location: "Suzuka, Japan",
-                flag: "🇯🇵",
-                circuit: "Suzuka International Racing Course",
-                laps: 53,
-                length: "5.807",
-                lapRecord: "1:28.452 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-04-03T02:30:00Z",
-                    fp2: "2026-04-03T06:00:00Z",
-                    fp3: "2026-04-04T02:30:00Z",
-                    qualifying: "2026-04-04T06:00:00Z",
-                    race: "2026-04-05T05:00:00Z"
-                }
-            },
-            {
-                round: 4,
-                name: "Bahrain Grand Prix",
-                location: "Sakhir, Bahrain",
-                flag: "🇧🇭",
-                circuit: "Bahrain International Circuit",
-                laps: 57,
-                length: "5.412",
-                lapRecord: "1:31.447 (De la Rosa, 2005)",
-                sessions: {
-                    fp1: "2026-04-10T13:30:00Z",
-                    fp2: "2026-04-10T17:00:00Z",
-                    fp3: "2026-04-11T14:00:00Z",
-                    qualifying: "2026-04-11T17:00:00Z",
-                    race: "2026-04-12T17:00:00Z"
-                }
-            },
-            {
-                round: 5,
-                name: "Saudi Arabian Grand Prix",
-                location: "Jeddah, Saudi Arabia",
-                flag: "🇸🇦",
-                circuit: "Jeddah Corniche Circuit",
-                laps: 50,
-                length: "6.174",
-                lapRecord: "1:30.734 (Hamilton, 2021)",
-                sessions: {
-                    fp1: "2026-04-17T15:30:00Z",
-                    fp2: "2026-04-17T19:00:00Z",
-                    fp3: "2026-04-18T15:30:00Z",
-                    qualifying: "2026-04-18T19:00:00Z",
-                    race: "2026-04-19T19:00:00Z"
-                }
-            },
-            {
-                round: 6,
-                name: "Miami Grand Prix",
-                location: "Miami, USA",
-                flag: "🇺🇸",
-                circuit: "Miami International Autodrome",
-                laps: 57,
-                length: "5.412",
-                lapRecord: "1:29.708 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-05-01T18:30:00Z",
-                    sprintQuali: "2026-05-01T22:30:00Z",
-                    sprint: "2026-05-02T18:00:00Z",
-                    qualifying: "2026-05-02T22:00:00Z",
-                    race: "2026-05-03T20:00:00Z"
-                }
-            },
-            {
-                round: 7,
-                name: "Emilia Romagna Grand Prix",
-                location: "Imola, Italy",
-                flag: "🇮🇹",
-                circuit: "Autodromo Enzo e Dino Ferrari",
-                laps: 63,
-                length: "4.909",
-                lapRecord: "1:15.484 (Hamilton, 2020)",
-                sessions: {
-                    fp1: "2026-05-15T11:30:00Z",
-                    fp2: "2026-05-15T15:00:00Z",
-                    fp3: "2026-05-16T10:30:00Z",
-                    qualifying: "2026-05-16T14:00:00Z",
-                    race: "2026-05-17T13:00:00Z"
-                }
-            },
-            {
-                round: 8,
-                name: "Monaco Grand Prix",
-                location: "Monte Carlo, Monaco",
-                flag: "🇲🇨",
-                circuit: "Circuit de Monaco",
-                laps: 78,
-                length: "3.337",
-                lapRecord: "1:12.909 (Hamilton, 2021)",
-                sessions: {
-                    fp1: "2026-05-22T11:30:00Z",
-                    fp2: "2026-05-22T15:00:00Z",
-                    fp3: "2026-05-23T10:30:00Z",
-                    qualifying: "2026-05-23T14:00:00Z",
-                    race: "2026-05-24T13:00:00Z"
-                }
-            },
-            {
-                round: 9,
-                name: "Spanish Grand Prix",
-                location: "Barcelona, Spain",
-                flag: "🇪🇸",
-                circuit: "Circuit de Barcelona-Catalunya",
-                laps: 66,
-                length: "4.657",
-                lapRecord: "1:16.330 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-06-05T11:30:00Z",
-                    fp2: "2026-06-05T15:00:00Z",
-                    fp3: "2026-06-06T10:30:00Z",
-                    qualifying: "2026-06-06T14:00:00Z",
-                    race: "2026-06-07T13:00:00Z"
-                }
-            },
-            {
-                round: 10,
-                name: "Canadian Grand Prix",
-                location: "Montreal, Canada",
-                flag: "🇨🇦",
-                circuit: "Circuit Gilles Villeneuve",
-                laps: 70,
-                length: "4.361",
-                lapRecord: "1:13.078 (Norris, 2024)",
-                sessions: {
-                    fp1: "2026-06-12T17:30:00Z",
-                    fp2: "2026-06-12T21:00:00Z",
-                    fp3: "2026-06-13T16:30:00Z",
-                    qualifying: "2026-06-13T20:00:00Z",
-                    race: "2026-06-14T18:00:00Z"
-                }
-            },
-            {
-                round: 11,
-                name: "Austrian Grand Prix",
-                location: "Spielberg, Austria",
-                flag: "🇦🇹",
-                circuit: "Red Bull Ring",
-                laps: 71,
-                length: "4.318",
-                lapRecord: "1:05.619 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-06-26T10:30:00Z",
-                    sprintQuali: "2026-06-26T14:30:00Z",
-                    sprint: "2026-06-27T10:00:00Z",
-                    qualifying: "2026-06-27T14:00:00Z",
-                    race: "2026-06-28T13:00:00Z"
-                }
-            },
-            {
-                round: 12,
-                name: "British Grand Prix",
-                location: "Silverstone, UK",
-                flag: "🇬🇧",
-                circuit: "Silverstone Circuit",
-                laps: 52,
-                length: "5.891",
-                lapRecord: "1:27.097 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-07-03T11:30:00Z",
-                    fp2: "2026-07-03T15:00:00Z",
-                    fp3: "2026-07-04T10:30:00Z",
-                    qualifying: "2026-07-04T14:00:00Z",
-                    race: "2026-07-05T14:00:00Z"
-                }
-            },
-            {
-                round: 13,
-                name: "Belgian Grand Prix",
-                location: "Spa-Francorchamps, Belgium",
-                flag: "🇧🇪",
-                circuit: "Circuit de Spa-Francorchamps",
-                laps: 44,
-                length: "7.004",
-                lapRecord: "1:44.701 (Hamilton, 2024)",
-                sessions: {
-                    fp1: "2026-07-24T10:30:00Z",
-                    fp2: "2026-07-24T14:00:00Z",
-                    fp3: "2026-07-25T10:30:00Z",
-                    qualifying: "2026-07-25T14:00:00Z",
-                    race: "2026-07-26T13:00:00Z"
-                }
-            },
-            {
-                round: 14,
-                name: "Hungarian Grand Prix",
-                location: "Budapest, Hungary",
-                flag: "🇭🇺",
-                circuit: "Hungaroring",
-                laps: 70,
-                length: "4.381",
-                lapRecord: "1:16.609 (Hamilton, 2020)",
-                sessions: {
-                    fp1: "2026-07-31T11:30:00Z",
-                    fp2: "2026-07-31T15:00:00Z",
-                    fp3: "2026-08-01T10:30:00Z",
-                    qualifying: "2026-08-01T14:00:00Z",
-                    race: "2026-08-02T13:00:00Z"
-                }
-            },
-            {
-                round: 15,
-                name: "Dutch Grand Prix",
-                location: "Zandvoort, Netherlands",
-                flag: "🇳🇱",
-                circuit: "Circuit Zandvoort",
-                laps: 72,
-                length: "4.259",
-                lapRecord: "1:11.097 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-08-21T10:30:00Z",
-                    fp2: "2026-08-21T14:00:00Z",
-                    fp3: "2026-08-22T10:30:00Z",
-                    qualifying: "2026-08-22T14:00:00Z",
-                    race: "2026-08-23T13:00:00Z"
-                }
-            },
-            {
-                round: 16,
-                name: "Italian Grand Prix",
-                location: "Monza, Italy",
-                flag: "🇮🇹",
-                circuit: "Autodromo Nazionale Monza",
-                laps: 53,
-                length: "5.793",
-                lapRecord: "1:21.046 (Barrichello, 2004)",
-                sessions: {
-                    fp1: "2026-09-04T11:30:00Z",
-                    fp2: "2026-09-04T15:00:00Z",
-                    fp3: "2026-09-05T10:30:00Z",
-                    qualifying: "2026-09-05T14:00:00Z",
-                    race: "2026-09-06T13:00:00Z"
-                }
-            },
-            {
-                round: 17,
-                name: "Azerbaijan Grand Prix",
-                location: "Baku, Azerbaijan",
-                flag: "🇦🇿",
-                circuit: "Baku City Circuit",
-                laps: 51,
-                length: "6.003",
-                lapRecord: "1:43.009 (Leclerc, 2024)",
-                sessions: {
-                    fp1: "2026-09-18T10:30:00Z",
-                    fp2: "2026-09-18T14:00:00Z",
-                    fp3: "2026-09-19T10:30:00Z",
-                    qualifying: "2026-09-19T14:00:00Z",
-                    race: "2026-09-20T11:00:00Z"
-                }
-            },
-            {
-                round: 18,
-                name: "Singapore Grand Prix",
-                location: "Singapore",
-                flag: "🇸🇬",
-                circuit: "Marina Bay Street Circuit",
-                laps: 62,
-                length: "4.940",
-                lapRecord: "1:34.486 (Magnussen, 2018)",
-                sessions: {
-                    fp1: "2026-10-02T09:30:00Z",
-                    fp2: "2026-10-02T13:00:00Z",
-                    fp3: "2026-10-03T09:30:00Z",
-                    qualifying: "2026-10-03T13:00:00Z",
-                    race: "2026-10-04T12:00:00Z"
-                }
-            },
-            {
-                round: 19,
-                name: "United States Grand Prix",
-                location: "Austin, USA",
-                flag: "🇺🇸",
-                circuit: "Circuit of the Americas",
-                laps: 56,
-                length: "5.513",
-                lapRecord: "1:36.169 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-10-23T17:30:00Z",
-                    sprintQuali: "2026-10-23T21:30:00Z",
-                    sprint: "2026-10-24T17:00:00Z",
-                    qualifying: "2026-10-24T21:00:00Z",
-                    race: "2026-10-25T19:00:00Z"
-                }
-            },
-            {
-                round: 20,
-                name: "Mexican Grand Prix",
-                location: "Mexico City, Mexico",
-                flag: "🇲🇽",
-                circuit: "Autodromo Hermanos Rodriguez",
-                laps: 71,
-                length: "4.304",
-                lapRecord: "1:17.774 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-10-30T18:30:00Z",
-                    fp2: "2026-10-30T22:00:00Z",
-                    fp3: "2026-10-31T17:30:00Z",
-                    qualifying: "2026-10-31T21:00:00Z",
-                    race: "2026-11-01T20:00:00Z"
-                }
-            },
-            {
-                round: 21,
-                name: "Brazilian Grand Prix",
-                location: "Sao Paulo, Brazil",
-                flag: "🇧🇷",
-                circuit: "Autodromo Jose Carlos Pace",
-                laps: 71,
-                length: "4.309",
-                lapRecord: "1:10.540 (Hamilton, 2024)",
-                sessions: {
-                    fp1: "2026-11-13T14:30:00Z",
-                    sprintQuali: "2026-11-13T18:30:00Z",
-                    sprint: "2026-11-14T14:00:00Z",
-                    qualifying: "2026-11-14T18:00:00Z",
-                    race: "2026-11-15T17:00:00Z"
-                }
-            },
-            {
-                round: 22,
-                name: "Las Vegas Grand Prix",
-                location: "Las Vegas, USA",
-                flag: "🇺🇸",
-                circuit: "Las Vegas Strip Circuit",
-                laps: 50,
-                length: "6.201",
-                lapRecord: "1:34.876 (Leclerc, 2024)",
-                sessions: {
-                    fp1: "2026-11-19T22:30:00Z",
-                    fp2: "2026-11-20T02:00:00Z",
-                    fp3: "2026-11-20T22:30:00Z",
-                    qualifying: "2026-11-21T02:00:00Z",
-                    race: "2026-11-22T04:00:00Z"
-                }
-            },
-            {
-                round: 23,
-                name: "Qatar Grand Prix",
-                location: "Lusail, Qatar",
-                flag: "🇶🇦",
-                circuit: "Lusail International Circuit",
-                laps: 57,
-                length: "5.419",
-                lapRecord: "1:24.319 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-11-27T13:30:00Z",
-                    sprintQuali: "2026-11-27T17:30:00Z",
-                    sprint: "2026-11-28T13:00:00Z",
-                    qualifying: "2026-11-28T17:00:00Z",
-                    race: "2026-11-29T17:00:00Z"
-                }
-            },
-            {
-                round: 24,
-                name: "Abu Dhabi Grand Prix",
-                location: "Yas Island, UAE",
-                flag: "🇦🇪",
-                circuit: "Yas Marina Circuit",
-                laps: 58,
-                length: "5.281",
-                lapRecord: "1:26.103 (Verstappen, 2024)",
-                sessions: {
-                    fp1: "2026-12-04T09:30:00Z",
-                    fp2: "2026-12-04T13:00:00Z",
-                    fp3: "2026-12-05T10:30:00Z",
-                    qualifying: "2026-12-05T14:00:00Z",
-                    race: "2026-12-06T13:00:00Z"
-                }
-            }
-        ];
+        const API_BASE = 'https://api.jolpi.ca/ergast/f1';
+        const CURRENT_SEASON = new Date().getFullYear();
 
+        let f1Calendar = [];
         let selectedRaceIndex = 0;
         let countdownInterval = null;
 
+        // Flag emoji mapping by country
+        const flagMap = {
+            'Australia': '🇦🇺', 'China': '🇨🇳', 'Japan': '🇯🇵', 'Bahrain': '🇧🇭',
+            'Saudi Arabia': '🇸🇦', 'USA': '🇺🇸', 'United States': '🇺🇸', 'Italy': '🇮🇹',
+            'Monaco': '🇲🇨', 'Spain': '🇪🇸', 'Canada': '🇨🇦', 'Austria': '🇦🇹',
+            'UK': '🇬🇧', 'United Kingdom': '🇬🇧', 'Great Britain': '🇬🇧', 'Belgium': '🇧🇪',
+            'Hungary': '🇭🇺', 'Netherlands': '🇳🇱', 'Azerbaijan': '🇦🇿', 'Singapore': '🇸🇬',
+            'Mexico': '🇲🇽', 'Brazil': '🇧🇷', 'Qatar': '🇶🇦', 'UAE': '🇦🇪',
+            'United Arab Emirates': '🇦🇪', 'Abu Dhabi': '🇦🇪', 'Las Vegas': '🇺🇸',
+            'Miami': '🇺🇸', 'Austin': '🇺🇸', 'Imola': '🇮🇹', 'Monza': '🇮🇹',
+            'Suzuka': '🇯🇵', 'Sakhir': '🇧🇭', 'Jeddah': '🇸🇦', 'Spielberg': '🇦🇹',
+            'Silverstone': '🇬🇧', 'Spa': '🇧🇪', 'Budapest': '🇭🇺', 'Zandvoort': '🇳🇱',
+            'Baku': '🇦🇿', 'Shanghai': '🇨🇳', 'Melbourne': '🇦🇺', 'Montreal': '🇨🇦',
+            'Barcelona': '🇪🇸', 'Monte Carlo': '🇲🇨', 'Lusail': '🇶🇦', 'Yas Marina': '🇦🇪',
+            'Sao Paulo': '🇧🇷', 'Mexico City': '🇲🇽'
+        };
+
+        function getFlag(location) {
+            for (const [key, flag] of Object.entries(flagMap)) {
+                if (location.includes(key)) return flag;
+            }
+            return '🏁';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // FETCH DATA FROM JOLPICA API
+        // ═══════════════════════════════════════════════════════════════════
+        async function fetchCalendar() {
+            try {
+                const response = await fetch(`${API_BASE}/${CURRENT_SEASON}.json`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                const races = data.MRData.RaceTable.Races;
+
+                if (!races || races.length === 0) {
+                    throw new Error('No races found for current season');
+                }
+
+                f1Calendar = races.map((race, index) => {
+                    const circuit = race.Circuit;
+                    const location = circuit.Location;
+                    const country = location.country;
+                    const locality = location.locality;
+
+                    // Build session times from race date + typical F1 weekend schedule
+                    // FP1: Friday ~10:30-12:00 local, FP2: Friday ~14:00-15:30 local
+                    // FP3: Saturday ~10:30-11:30 local, Qualifying: Saturday ~15:00-16:00 local
+                    // Race: Sunday ~15:00 local (varies by timezone)
+                    const raceDate = new Date(race.date + 'T' + (race.time || '15:00:00Z'));
+                    const raceTime = raceDate.getTime();
+
+                    // Estimate session times (2-3 hours before race day, typical F1 schedule)
+                    // These are approximations — for precise times you'd need a more detailed API
+                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); // Fri ~10:30
+                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);  // Fri ~14:00
+                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); // Sat ~10:30
+                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);  // Sat ~15:00
+
+                    return {
+                        round: parseInt(race.round),
+                        name: race.raceName,
+                        location: `${locality}, ${country}`,
+                        flag: getFlag(locality + ' ' + country),
+                        circuit: circuit.circuitName,
+                        circuitId: circuit.circuitId,
+                        laps: getEstimatedLaps(circuit.circuitId),
+                        length: getCircuitLength(circuit.circuitId),
+                        lapRecord: getLapRecord(circuit.circuitId),
+                        sessions: {
+                            fp1: new Date(fp1Time).toISOString(),
+                            fp2: new Date(fp2Time).toISOString(),
+                            fp3: new Date(fp3Time).toISOString(),
+                            qualifying: new Date(qualTime).toISOString(),
+                            race: raceDate.toISOString()
+                        }
+                    };
+                });
+
+                autoSelectRace();
+                renderRaceSelector();
+                startCountdown();
+                initPlayer();
+
+            } catch (error) {
+                console.error('Failed to fetch calendar:', error);
+                document.getElementById('countdownContent').innerHTML = `
+                    <div class="error-message">
+                        ⚠️ Failed to load F1 calendar data.<br>
+                        ${error.message}<br><br>
+                        <small>The Jolpica API may be temporarily unavailable. Refresh to retry.</small>
+                    </div>
+                `;
+                document.getElementById('raceTitle').textContent = 'Connection Error';
+                document.getElementById('raceSubtitle').textContent = 'Could not fetch live data';
+            }
+        }
+
+        // Circuit data estimates (since API doesn't provide all details)
+        function getEstimatedLaps(circuitId) {
+            const laps = {
+                'albert_park': 58, 'shanghai': 56, 'suzuka': 53, 'bahrain': 57,
+                'jeddah': 50, 'miami': 57, 'imola': 63, 'monaco': 78,
+                'catalunya': 66, 'villeneuve': 70, 'red_bull_ring': 71,
+                'silverstone': 52, 'spa': 44, 'hungaroring': 70, 'zandvoort': 72,
+                'monza': 53, 'baku': 51, 'marina_bay': 62, 'americas': 56,
+                'rodriguez': 71, 'interlagos': 71, 'vegas': 50, 'losail': 57,
+                'yas_marina': 58
+            };
+            return laps[circuitId] || 55;
+        }
+
+        function getCircuitLength(circuitId) {
+            const lengths = {
+                'albert_park': '5.278', 'shanghai': '5.451', 'suzuka': '5.807', 'bahrain': '5.412',
+                'jeddah': '6.174', 'miami': '5.412', 'imola': '4.909', 'monaco': '3.337',
+                'catalunya': '4.657', 'villeneuve': '4.361', 'red_bull_ring': '4.318',
+                'silverstone': '5.891', 'spa': '7.004', 'hungaroring': '4.381', 'zandvoort': '4.259',
+                'monza': '5.793', 'baku': '6.003', 'marina_bay': '4.940', 'americas': '5.513',
+                'rodriguez': '4.304', 'interlagos': '4.309', 'vegas': '6.201', 'losail': '5.419',
+                'yas_marina': '5.281'
+            };
+            return lengths[circuitId] || '5.000';
+        }
+
+        function getLapRecord(circuitId) {
+            const records = {
+                'albert_park': '1:20.235 (Leclerc, 2024)', 'shanghai': '1:32.238 (Hamilton, 2024)',
+                'suzuka': '1:28.452 (Verstappen, 2024)', 'bahrain': '1:31.447 (De la Rosa, 2005)',
+                'jeddah': '1:30.734 (Hamilton, 2021)', 'miami': '1:29.708 (Verstappen, 2024)',
+                'imola': '1:15.484 (Hamilton, 2020)', 'monaco': '1:12.909 (Hamilton, 2021)',
+                'catalunya': '1:16.330 (Verstappen, 2024)', 'villeneuve': '1:13.078 (Norris, 2024)',
+                'red_bull_ring': '1:05.619 (Verstappen, 2024)', 'silverstone': '1:27.097 (Verstappen, 2024)',
+                'spa': '1:44.701 (Hamilton, 2024)', 'hungaroring': '1:16.609 (Hamilton, 2020)',
+                'zandvoort': '1:11.097 (Verstappen, 2024)', 'monza': '1:21.046 (Barrichello, 2004)',
+                'baku': '1:43.009 (Leclerc, 2024)', 'marina_bay': '1:34.486 (Magnussen, 2018)',
+                'americas': '1:36.169 (Verstappen, 2024)', 'rodriguez': '1:17.774 (Verstappen, 2024)',
+                'interlagos': '1:10.540 (Hamilton, 2024)', 'vegas': '1:34.876 (Leclerc, 2024)',
+                'losail': '1:24.319 (Verstappen, 2024)', 'yas_marina': '1:26.103 (Verstappen, 2024)'
+            };
+            return records[circuitId] || '—';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // COUNTDOWN LOGIC
+        // ═══════════════════════════════════════════════════════════════════
         function formatCountdown(ms) {
             if (ms <= 0) return { finished: true, text: "FINISHED", days: 0, hours: 0, minutes: 0, seconds: 0 };
 
@@ -1151,13 +925,9 @@ html_content = '''<!DOCTYPE html>
 
         function getSessionDisplayName(name) {
             const names = {
-                fp1: 'Free Practice 1',
-                fp2: 'Free Practice 2',
-                fp3: 'Free Practice 3',
-                sprintQuali: 'Sprint Qualifying',
-                sprint: 'Sprint Race',
-                qualifying: 'Qualifying',
-                race: 'Grand Prix'
+                fp1: 'Free Practice 1', fp2: 'Free Practice 2',
+                fp3: 'Free Practice 3', sprintQuali: 'Sprint Qualifying',
+                sprint: 'Sprint Race', qualifying: 'Qualifying', race: 'Grand Prix'
             };
             return names[name] || name.toUpperCase();
         }
@@ -1165,12 +935,8 @@ html_content = '''<!DOCTYPE html>
         function formatLocalTime(utcString) {
             const d = new Date(utcString);
             return d.toLocaleString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
+                weekday: 'short', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', hour12: true
             });
         }
 
@@ -1187,7 +953,7 @@ html_content = '''<!DOCTYPE html>
         function renderCountdown() {
             const race = f1Calendar[selectedRaceIndex];
             const now = Date.now();
-            const grid = document.getElementById('countdownGrid');
+            const container = document.getElementById('countdownContent');
 
             document.getElementById('raceTitle').textContent = race.name;
             document.getElementById('raceSubtitle').textContent = `${race.flag} ${race.location} • Round ${race.round}`;
@@ -1202,7 +968,7 @@ html_content = '''<!DOCTYPE html>
             const sessions = Object.entries(race.sessions);
             sessions.sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
 
-            let html = '';
+            let html = '<div class="countdown-grid">';
             let hasLive = false;
             let allFinished = true;
 
@@ -1267,16 +1033,17 @@ html_content = '''<!DOCTYPE html>
             if (allFinished && selectedRaceIndex === f1Calendar.length - 1) {
                 html += `
                     <div class="countdown-card finished" style="grid-column: 1 / -1;">
-                        <div class="session-label">2026 Season</div>
+                        <div class="session-label">${CURRENT_SEASON} Season</div>
                         <div class="countdown-digits"><span class="finished-text">🏆 SEASON COMPLETE</span></div>
                         <div class="countdown-labels">
-                            <span>See you in 2027!</span>
+                            <span>See you in ${CURRENT_SEASON + 1}!</span>
                         </div>
                     </div>
                 `;
             }
 
-            grid.innerHTML = html;
+            html += '</div>';
+            container.innerHTML = html;
 
             const liveStatus = document.getElementById('liveStatus');
             if (hasLive) {
@@ -1347,11 +1114,13 @@ html_content = '''<!DOCTYPE html>
             }
         }
 
-        autoSelectRace();
-        renderRaceSelector();
-        startCountdown();
-        initPlayer();
+        // Expose for onclick handlers
         window.selectRace = selectRace;
+
+        // ═══════════════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════════════
+        fetchCalendar();
     </script>
 </body>
 </html>'''
