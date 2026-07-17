@@ -1,5 +1,4 @@
-
-html_content = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -429,6 +428,35 @@ html_content = r'''<!DOCTYPE html>
             display: block;
         }
 
+        /* Adblock Overlays */
+        .ad-overlay {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: #000;
+            z-index: 2;
+            pointer-events: none; /* Let clicks pass through to video controls if needed */
+        }
+        .ad-overlay.top { top: 0; height: 40px; }
+        .ad-overlay.bottom { bottom: 0; height: 45px; }
+
+        .adblock-warning {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 3;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .adblock-warning:hover { transform: scale(1.05); }
+
         .player-placeholder {
             position: absolute;
             inset: 0;
@@ -438,7 +466,7 @@ html_content = r'''<!DOCTYPE html>
             justify-content: center;
             background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0a 100%);
             gap: 16px;
-            z-index: 2;
+            z-index: 4;
         }
 
         .player-placeholder.hidden {
@@ -472,6 +500,8 @@ html_content = r'''<!DOCTYPE html>
         .placeholder-text {
             color: var(--text-secondary);
             font-size: 14px;
+            text-align: center;
+            max-width: 400px;
         }
 
         .info-section {
@@ -624,6 +654,8 @@ html_content = r'''<!DOCTYPE html>
             .main { padding: 16px; }
             .countdown-grid { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; align-items: flex-start; }
+            .ad-overlay.top { height: 30px; }
+            .ad-overlay.bottom { height: 35px; }
         }
     </style>
 </head>
@@ -675,12 +707,13 @@ html_content = r'''<!DOCTYPE html>
                         <div class="player-title-icon">📡</div>
                         <div>
                             <div class="player-title-text">EpsilonF1 Broadcast Feed</div>
-                            <div class="player-title-sub">High-definition race coverage • Multi-camera angles</div>
+                            <div class="player-title-sub">High-definition race coverage • Ad-Shield Enabled</div>
                         </div>
                     </div>
                     <div class="player-badge">HD STREAM</div>
                 </div>
                 <div class="player-frame">
+                    <!-- Hardened iframe to block popups and redirects -->
                     <iframe
                         id="streamFrame"
                         src=""
@@ -688,17 +721,28 @@ html_content = r'''<!DOCTYPE html>
                         name="frame"
                         scrolling="no"
                         frameborder="no"
-                        allow="fullscreen"
+                        allow="autoplay; fullscreen; encrypted-media"
+                        sandbox="allow-scripts allow-same-origin"
+                        referrerpolicy="no-referrer"
                         align="center"
                         height="100%"
                         width="100%">
                     </iframe>
 
+                    <!-- CSS Overlays to hide visual banner ads inside the iframe -->
+                    <div class="ad-overlay top"></div>
+                    <div class="ad-overlay bottom"></div>
+                    
+                    <!-- Warning badge linking to uBlock Origin -->
+                    <a href="https://github.com/gorhill/uBlock#installation" target="_blank" class="adblock-warning" title="For 100% ad-free viewing, install uBlock Origin">
+                        🛡️ Ads? Install uBlock
+                    </a>
+
                     <div class="player-placeholder" id="playerPlaceholder">
                         <button class="play-button" id="playButton" title="Start Stream">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </button>
-                        <p class="placeholder-text">Click to load EpsilonF1 broadcast feed</p>
+                        <p class="placeholder-text">Click to load EpsilonF1 broadcast feed.<br><small>Stealth Ad-Shield is active. For absolute zero ads, use <strong>uBlock Origin</strong> browser extension.</small></p>
                     </div>
                 </div>
             </div>
@@ -792,7 +836,7 @@ html_content = r'''<!DOCTYPE html>
                     throw new Error('No races found for current season');
                 }
 
-                f1Calendar = races.map((race) => {
+                f1Calendar = races.map((race, index) => {
                     const circuit = race.Circuit;
                     const location = circuit.Location;
                     const country = location.country;
@@ -801,11 +845,10 @@ html_content = r'''<!DOCTYPE html>
                     const raceDate = new Date(race.date + 'T' + (race.time || '15:00:00Z'));
                     const raceTime = raceDate.getTime();
 
-                    // Estimate session times using standard F1 weekend schedule
-                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000);
-                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);
-                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000);
-                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);
+                    const fp1Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); 
+                    const fp2Time = raceTime - (2.5 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);  
+                    const fp3Time = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (10.5 * 60 * 60 * 1000); 
+                    const qualTime = raceTime - (1.5 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);  
 
                     return {
                         round: parseInt(race.round),
@@ -846,7 +889,6 @@ html_content = r'''<!DOCTYPE html>
             }
         }
 
-        // Circuit data estimates
         function getEstimatedLaps(circuitId) {
             const laps = {
                 'albert_park': 58, 'shanghai': 56, 'suzuka': 53, 'bahrain': 57,
@@ -1118,9 +1160,4 @@ html_content = r'''<!DOCTYPE html>
         fetchCalendar();
     </script>
 </body>
-</html>'''
-
-with open('/mnt/agents/output/index.html', 'w') as f:
-    f.write(html_content)
-
-print(f"✅ Clean index.html saved! ({len(html_content):,} chars)")
+</html>
