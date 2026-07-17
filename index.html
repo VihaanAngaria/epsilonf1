@@ -435,7 +435,7 @@
             right: 0;
             background: #000;
             z-index: 2;
-            pointer-events: none; /* Let clicks pass through to video controls if needed */
+            pointer-events: none;
         }
         .ad-overlay.top { top: 0; height: 40px; }
         .ad-overlay.bottom { bottom: 0; height: 45px; }
@@ -713,7 +713,7 @@
                     <div class="player-badge">HD STREAM</div>
                 </div>
                 <div class="player-frame">
-                    <!-- Hardened iframe to block popups and redirects -->
+                    <!-- Sandbox removed to prevent stream detection -->
                     <iframe
                         id="streamFrame"
                         src=""
@@ -722,7 +722,6 @@
                         scrolling="no"
                         frameborder="no"
                         allow="autoplay; fullscreen; encrypted-media"
-                        sandbox="allow-scripts allow-same-origin"
                         referrerpolicy="no-referrer"
                         align="center"
                         height="100%"
