@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,11 +28,7 @@
             --font-body: 'Inter', sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font-body);
@@ -41,15 +38,12 @@
             overflow-x: hidden;
         }
 
-        /* Animated background grid */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
                 linear-gradient(rgba(225, 6, 0, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(225, 6, 0, 0.03) 1px, transparent 1px);
             background-size: 60px 60px;
@@ -57,7 +51,6 @@
             z-index: 0;
         }
 
-        /* Top Navigation */
         .nav {
             position: sticky;
             top: 0;
@@ -85,8 +78,7 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             background: var(--accent-red);
             border-radius: 8px;
             display: flex;
@@ -107,14 +99,9 @@
             letter-spacing: 1px;
         }
 
-        .logo-text span {
-            color: var(--accent-red);
-        }
+        .logo-text span { color: var(--accent-red); }
 
-        .nav-links {
-            display: flex;
-            gap: 8px;
-        }
+        .nav-links { display: flex; gap: 8px; }
 
         .nav-link {
             padding: 8px 16px;
@@ -146,8 +133,7 @@
         }
 
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background: var(--live);
             border-radius: 50%;
         }
@@ -157,7 +143,6 @@
             50% { opacity: 0.6; }
         }
 
-        /* Main Content */
         .main {
             position: relative;
             z-index: 1;
@@ -166,10 +151,7 @@
             padding: 24px;
         }
 
-        /* Hero Section */
-        .hero {
-            margin-bottom: 32px;
-        }
+        .hero { margin-bottom: 32px; }
 
         .hero-title {
             font-family: var(--font-display);
@@ -187,16 +169,15 @@
             font-size: 16px;
         }
 
-        /* Countdown Section */
-        .countdown-section {
-            margin-bottom: 32px;
-        }
+        .countdown-section { margin-bottom: 32px; }
 
         .section-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .section-title {
@@ -210,8 +191,7 @@
 
         .section-title::before {
             content: '';
-            width: 4px;
-            height: 24px;
+            width: 4px; height: 24px;
             background: var(--accent-red);
             border-radius: 2px;
         }
@@ -246,7 +226,6 @@
             color: white;
         }
 
-        /* Countdown Cards */
         .countdown-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -266,9 +245,7 @@
         .countdown-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--accent-red), transparent);
             opacity: 0;
@@ -281,9 +258,7 @@
             transform: translateY(-2px);
         }
 
-        .countdown-card:hover::before {
-            opacity: 1;
-        }
+        .countdown-card:hover::before { opacity: 1; }
 
         .countdown-card.active {
             border-color: var(--accent-red);
@@ -362,10 +337,7 @@
             color: var(--success);
         }
 
-        /* Player Section */
-        .player-section {
-            margin-bottom: 32px;
-        }
+        .player-section { margin-bottom: 32px; }
 
         .player-container {
             background: var(--bg-card);
@@ -381,6 +353,8 @@
             padding: 16px 20px;
             background: linear-gradient(135deg, var(--bg-card) 0%, rgba(225, 6, 0, 0.05) 100%);
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .player-title {
@@ -390,8 +364,7 @@
         }
 
         .player-title-icon {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             background: var(--accent-red);
             border-radius: 8px;
             display: flex;
@@ -445,6 +418,7 @@
             justify-content: center;
             background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0a 100%);
             gap: 16px;
+            z-index: 2;
         }
 
         .player-placeholder.hidden {
@@ -452,8 +426,7 @@
         }
 
         .play-button {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             border-radius: 50%;
             background: var(--accent-red);
             border: none;
@@ -471,8 +444,7 @@
         }
 
         .play-button svg {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             fill: white;
             margin-left: 4px;
         }
@@ -482,7 +454,6 @@
             font-size: 14px;
         }
 
-        /* Race Info */
         .info-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -514,8 +485,7 @@
         }
 
         .track-flag {
-            width: 60px;
-            height: 40px;
+            width: 60px; height: 40px;
             border-radius: 6px;
             background: var(--bg-secondary);
             display: flex;
@@ -553,12 +523,12 @@
         }
 
         .track-meta-item svg {
-            width: 16px;
-            height: 16px;
+            width: 16px; height: 16px;
             stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 2;
         }
 
-        /* Schedule List */
         .schedule-list {
             display: flex;
             flex-direction: column;
@@ -576,9 +546,7 @@
             transition: all 0.2s;
         }
 
-        .schedule-item:hover {
-            border-color: var(--border);
-        }
+        .schedule-item:hover { border-color: var(--border); }
 
         .schedule-item.active {
             border-color: var(--accent-red);
@@ -604,7 +572,6 @@
             color: var(--text-muted);
         }
 
-        /* Footer */
         .footer {
             border-top: 1px solid var(--border);
             padding: 24px;
@@ -620,13 +587,13 @@
             margin-bottom: 8px;
         }
 
-        /* Mobile */
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero-title { font-size: 24px; }
             .countdown-digits { font-size: 22px; }
             .main { padding: 16px; }
             .countdown-grid { grid-template-columns: 1fr; }
+            .section-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -650,13 +617,11 @@
     </nav>
 
     <main class="main">
-        <!-- Hero -->
         <section class="hero">
             <h1 class="hero-title" id="raceTitle">Loading...</h1>
             <p class="hero-subtitle" id="raceSubtitle">Select a race to view countdown</p>
         </section>
 
-        <!-- Countdown -->
         <section class="countdown-section">
             <div class="section-header">
                 <h2 class="section-title">Race Weekend</h2>
@@ -665,7 +630,6 @@
             <div class="countdown-grid" id="countdownGrid"></div>
         </section>
 
-        <!-- Player -->
         <section class="player-section">
             <div class="section-header">
                 <h2 class="section-title">Live Stream</h2>
@@ -682,22 +646,18 @@
                     <div class="player-badge">HD STREAM</div>
                 </div>
                 <div class="player-frame">
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- EMBED PLAYER SLOT — Replace src with your stream URL -->
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <iframe 
+                    <iframe
                         id="streamFrame"
-                        src="" 
-                        loading="lazy" 
-                        name="frame" 
-                        scrolling="no" 
-                        frameborder="no" 
-                        allow="fullscreen" 
-                        align="center" 
-                        height="100%" 
+                        src=""
+                        loading="lazy"
+                        name="frame"
+                        scrolling="no"
+                        frameborder="no"
+                        allow="fullscreen"
+                        align="center"
+                        height="100%"
                         width="100%">
                     </iframe>
-                    <!-- ═══════════════════════════════════════════════════════ -->
 
                     <div class="player-placeholder" id="playerPlaceholder">
                         <button class="play-button" id="playButton" title="Start Stream">
@@ -709,7 +669,6 @@
             </div>
         </section>
 
-        <!-- Info Section -->
         <section class="info-section">
             <div class="info-card">
                 <div class="info-card-title">Circuit</div>
@@ -720,15 +679,15 @@
                         <p id="trackLocation">—</p>
                         <div class="track-meta">
                             <div class="track-meta-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                                 <span id="trackLaps">— laps</span>
                             </div>
                             <div class="track-meta-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                                 <span id="trackLength">— km</span>
                             </div>
                             <div class="track-meta-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                                 <span id="trackRecord">—</span>
                             </div>
                         </div>
@@ -751,7 +710,6 @@
     <script>
         // ═══════════════════════════════════════════════════════════════════
         // 2026 F1 CALENDAR DATA — Update dates as season progresses
-        // All times are in UTC. Adjust for your timezone as needed.
         // ═══════════════════════════════════════════════════════════════════
         const f1Calendar = [
             {
@@ -1164,15 +1122,9 @@
             }
         ];
 
-        // ═══════════════════════════════════════════════════════════════════
-        // STATE
-        // ═══════════════════════════════════════════════════════════════════
         let selectedRaceIndex = 0;
         let countdownInterval = null;
 
-        // ═══════════════════════════════════════════════════════════════════
-        // HELPERS
-        // ═══════════════════════════════════════════════════════════════════
         function formatCountdown(ms) {
             if (ms <= 0) return { finished: true, text: "FINISHED", days: 0, hours: 0, minutes: 0, seconds: 0 };
 
@@ -1191,38 +1143,16 @@
         function getSessionStatus(sessionTime) {
             const now = Date.now();
             const start = new Date(sessionTime).getTime();
-            const end = start + (90 * 60 * 1000); // Assume 90 min session duration
-
+            const end = start + (90 * 60 * 1000);
             if (now < start) return 'upcoming';
             if (now >= start && now <= end) return 'live';
             return 'completed';
         }
 
-        function getNextSession(race) {
-            const now = Date.now();
-            const sessions = Object.entries(race.sessions);
-
-            // Sort by time
-            sessions.sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
-
-            for (const [name, time] of sessions) {
-                const sessionTime = new Date(time).getTime();
-                const endTime = sessionTime + (90 * 60 * 1000);
-
-                // If session hasn't started yet, or is currently live
-                if (now < endTime) {
-                    return { name, time: sessionTime, endTime, status: getSessionStatus(time) };
-                }
-            }
-
-            // All sessions finished — return race as "next" to trigger next race countdown
-            return null;
-        }
-
         function getSessionDisplayName(name) {
             const names = {
                 fp1: 'Free Practice 1',
-                fp2: 'Free Practice 2', 
+                fp2: 'Free Practice 2',
                 fp3: 'Free Practice 3',
                 sprintQuali: 'Sprint Qualifying',
                 sprint: 'Sprint Race',
@@ -1244,13 +1174,10 @@
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // RENDER
-        // ═══════════════════════════════════════════════════════════════════
         function renderRaceSelector() {
             const container = document.getElementById('raceSelector');
             container.innerHTML = f1Calendar.map((race, i) => `
-                <button class="race-chip ${i === selectedRaceIndex ? 'active' : ''}" 
+                <button class="race-chip ${i === selectedRaceIndex ? 'active' : ''}"
                         onclick="selectRace(${i})">
                     R${race.round}
                 </button>
@@ -1262,11 +1189,9 @@
             const now = Date.now();
             const grid = document.getElementById('countdownGrid');
 
-            // Update hero
             document.getElementById('raceTitle').textContent = race.name;
             document.getElementById('raceSubtitle').textContent = `${race.flag} ${race.location} • Round ${race.round}`;
 
-            // Update track info
             document.getElementById('trackFlag').textContent = race.flag;
             document.getElementById('trackName').textContent = race.circuit;
             document.getElementById('trackLocation').textContent = race.location;
@@ -1274,7 +1199,6 @@
             document.getElementById('trackLength').textContent = `${race.length} km`;
             document.getElementById('trackRecord').textContent = race.lapRecord;
 
-            // Build session cards
             const sessions = Object.entries(race.sessions);
             sessions.sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
 
@@ -1321,7 +1245,6 @@
                 `;
             });
 
-            // If all sessions finished, show countdown to NEXT race
             if (allFinished && selectedRaceIndex < f1Calendar.length - 1) {
                 const nextRace = f1Calendar[selectedRaceIndex + 1];
                 const nextRaceTime = new Date(nextRace.sessions.race).getTime();
@@ -1341,7 +1264,6 @@
                 `;
             }
 
-            // If last race finished, show "Season Complete"
             if (allFinished && selectedRaceIndex === f1Calendar.length - 1) {
                 html += `
                     <div class="countdown-card finished" style="grid-column: 1 / -1;">
@@ -1356,7 +1278,6 @@
 
             grid.innerHTML = html;
 
-            // Update live badge
             const liveStatus = document.getElementById('liveStatus');
             if (hasLive) {
                 liveStatus.textContent = 'ON AIR';
@@ -1386,29 +1307,17 @@
             }).join('');
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // PLAYER
-        // ═══════════════════════════════════════════════════════════════════
         function initPlayer() {
             const playBtn = document.getElementById('playButton');
             const placeholder = document.getElementById('playerPlaceholder');
             const frame = document.getElementById('streamFrame');
 
             playBtn.addEventListener('click', () => {
-                // ═══════════════════════════════════════════════════════════
-                // REPLACE THIS URL WITH YOUR STREAM SOURCE
-                // Current: empty (shows placeholder)
-                // Example: frame.src = "https://your-stream-source.com/embed";
-                // ═══════════════════════════════════════════════════════════
                 frame.src = "https://westreamf1.com/westreamf1.php";
-
                 placeholder.classList.add('hidden');
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // MAIN
-        // ═══════════════════════════════════════════════════════════════════
         function selectRace(index) {
             selectedRaceIndex = index;
             renderRaceSelector();
@@ -1426,12 +1335,11 @@
             }, 1000);
         }
 
-        // Auto-select nearest upcoming race on load
         function autoSelectRace() {
             const now = Date.now();
             for (let i = 0; i < f1Calendar.length; i++) {
                 const race = f1Calendar[i];
-                const raceEnd = new Date(race.sessions.race).getTime() + (120 * 60 * 1000); // +2h for race
+                const raceEnd = new Date(race.sessions.race).getTime() + (120 * 60 * 1000);
                 if (now < raceEnd) {
                     selectedRaceIndex = i;
                     break;
@@ -1439,14 +1347,16 @@
             }
         }
 
-        // Init
         autoSelectRace();
         renderRaceSelector();
         startCountdown();
         initPlayer();
-
-        // Expose for onclick handlers
         window.selectRace = selectRace;
     </script>
 </body>
-</html>
+</html>'''
+
+with open('/mnt/agents/output/index.html', 'w') as f:
+    f.write(html_content)
+
+print(f"✅ index.html saved! ({len(html_content):,} chars)")
