@@ -1,4 +1,10 @@
+The error in your code is caused by two things:
+1. A leftover artifact at the very top of the file (`{Pasted%20Content_1784298944437.txt：`).
+2. A stray closing curly brace `}` at the very bottom of the script, which causes a Python `SyntaxError` since it doesn't belong to any block of code.
 
+Here is the fully fixed and cleaned-up code:
+
+```python
 html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1129,3 +1135,4 @@ with open('/mnt/agents/output/index.html', 'w') as f:
     f.write(html_content)
 
 print(f"✅ index.html saved! ({len(html_content):,} chars)")
+```
