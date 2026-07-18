@@ -6,7 +6,6 @@
     <title>EpsilonF1 — Live F1 Coverage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- HLS.js for direct m3u8 streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root {
@@ -66,15 +65,32 @@
         .player-badge { padding: 4px 12px; background: rgba(225, 6, 0, 0.15); border: 1px solid rgba(225, 6, 0, 0.3); border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--accent-red); }
 
         .player-frame { position: relative; background: #000; aspect-ratio: 16/9; }
-        /* Using native browser controls for the direct stream */
         #streamVideo { width: 100%; height: 100%; display: block; object-fit: contain; display: none; }
+        #streamIframe { width: 100%; height: 100%; border: none; display: none; }
+
+        /* Adblock Overlays */
+        .ad-overlay { position: absolute; left: 0; right: 0; background: #000; z-index: 2; pointer-events: none; }
+        .ad-overlay.top { top: 0; height: 40px; }
+        .ad-overlay.bottom { bottom: 0; height: 45px; }
+        .btn-fullscreen { position: absolute; bottom: 10px; right: 15px; z-index: 3; background: rgba(0, 0, 0, 0.6); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        .btn-fullscreen:hover { transform: scale(1.05); background: var(--accent-red); }
 
         .player-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0a 100%); gap: 16px; z-index: 5; }
         .player-placeholder.hidden { display: none; }
         .play-button { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-red); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 30px var(--accent-red-glow); }
         .play-button:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--accent-red-glow); }
         .play-button svg { width: 32px; height: 32px; fill: white; margin-left: 4px; }
-        .placeholder-text { color: var(--text-secondary); font-size: 14px; text-align: center; max-width: 400px; }
+
+        /* Server Selection Grid */
+        .server-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; padding: 20px; background: var(--bg-card); }
+        .server-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        .server-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+        .server-card.active { border-color: var(--accent-red); background: rgba(225, 6, 0, 0.1); box-shadow: 0 0 15px rgba(225,6,0,0.2); }
+        .server-name { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--text-primary); }
+        .server-quality { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .server-status { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+        .server-status.online { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .server-status.ads { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 
         .info-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
@@ -156,21 +172,29 @@
                             <div class="player-title-icon">📡</div>
                             <div>
                                 <div class="player-title-text">EpsilonF1 Broadcast Feed</div>
-                                <div class="player-title-sub">Direct HLS Player • 100% Ad-Free</div>
+                                <div class="player-title-sub">Multi-Server Direct HLS</div>
                             </div>
                         </div>
                         <div class="player-badge">HD STREAM</div>
                     </div>
                     <div class="player-frame" id="playerFrameContainer">
                         <video id="streamVideo" playsinline controls style="display:none;"></video>
+                        <iframe id="streamIframe" src="" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="no-referrer" style="display:none;"></iframe>
+
+                        <!-- Ad Overlays (Only used for Web Player/iframe) -->
+                        <div class="ad-overlay top" id="adTop" style="display:none;"></div>
+                        <div class="ad-overlay bottom" id="adBottom" style="display:none;"></div>
+                        <button class="btn-fullscreen" id="btnFullscreen" onclick="toggleFullscreen()" style="display:none;">⛶ Fullscreen</button>
 
                         <div class="player-placeholder" id="playerPlaceholder">
                             <button class="play-button" id="playButton" title="Start Stream">
                                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </button>
-                            <p class="placeholder-text">Click to load EpsilonF1 broadcast feed.<br><small>Native HLS Player Active. Zero Ads.</small></p>
                         </div>
                     </div>
+
+                    <!-- Server Selection Grid -->
+                    <div class="server-selector" id="serverList"></div>
                 </div>
             </section>
 
@@ -245,16 +269,19 @@
         const API_BASE = 'https://api.jolpi.ca/ergast/f1';
         const CURRENT_SEASON = new Date().getFullYear();
 
-        // ==============================================================================
-        // EXTRACTED DIRECT M3U8 LINK (CORS Enabled - Will work perfectly)
-        // ==============================================================================
-        const DIRECT_M3U8_LINK = "https://beta.f1live.dpdns.org/hls/sky-f1.m3u8";
-        // ==============================================================================
+        // Server List extracted from Network Logs
+        const servers = [
+            { name: "Sky F1 FHD", quality: "Clean 1080p", url: "https://alpha.f1live.dpdns.org/p/AwZGQwwEZA/tracks-v1a1/mono.m3u8?token=c1lhdWg1N0lxNldaaE12ZnJ0MkRsY1NtcVoyQnk2eUYzWXVkbUthcHhxekRxNEduaVp1UnBxU2VlWmF0ZnRlRGxaMm0wNStDbnJOOXJJM0puSytpbkE9PQ==", type: "hls" },
+            { name: "Sky F1 1080p", quality: "Clean 1080p", url: "https://delta.f1live.dpdns.org/live-cdn/skyf11080p/index.m3u8?_t=Z-9YAPSPCMaWEvSs9sP_Lg&_e=1784398329&_n=ca150300821be3d3", type: "hls" },
+            { name: "Sky F1 Beta", quality: "Clean 720p", url: "https://beta.f1live.dpdns.org/hls/sky-f1.m3u8", type: "hls" },
+            { name: "Web Player", quality: "Backup", url: "https://westreamf1.com/westreamf1.php", type: "iframe" }
+        ];
+        let currentServerIndex = 0;
+        let hls = null;
 
         let f1Calendar = [];
         let selectedRaceIndex = 0;
         let countdownInterval = null;
-        let hls = null;
 
         const flagMap = {
             'Australia': '🇦🇺', 'China': '🇨🇳', 'Japan': '🇯🇵', 'Bahrain': '🇧🇭', 'Saudi Arabia': '🇸🇦', 'USA': '🇺🇸', 'United States': '🇺🇸', 'Italy': '🇮🇹', 'Monaco': '🇲🇨', 'Spain': '🇪🇸', 'Canada': '🇨🇦', 'Austria': '🇦🇹', 'UK': '🇬🇧', 'United Kingdom': '🇬🇧', 'Great Britain': '🇬🇧', 'Belgium': '🇧🇪', 'Hungary': '🇭🇺', 'Netherlands': '🇳🇱', 'Azerbaijan': '🇦🇿', 'Singapore': '🇸🇬', 'Mexico': '🇲🇽', 'Brazil': '🇧🇷', 'Qatar': '🇶🇦', 'UAE': '🇦🇪', 'United Arab Emirates': '🇦🇪', 'Abu Dhabi': '🇦🇪', 'Las Vegas': '🇺🇸', 'Miami': '🇺🇸', 'Austin': '🇺🇸', 'Imola': '🇮🇹', 'Monza': '🇮🇹', 'Suzuka': '🇯🇵', 'Sakhir': '🇧🇭', 'Jeddah': '🇸🇦', 'Spielberg': '🇦🇹', 'Silverstone': '🇬🇧', 'Spa': '🇧🇪', 'Budapest': '🇭🇺', 'Zandvoort': '🇳🇱', 'Baku': '🇦🇿', 'Shanghai': '🇨🇳', 'Melbourne': '🇦🇺', 'Montreal': '🇨🇦', 'Barcelona': '🇪🇸', 'Monte Carlo': '🇲🇨', 'Lusail': '🇶🇦', 'Yas Marina': '🇦🇪', 'Sao Paulo': '🇧🇷', 'Mexico City': '🇲🇽'
@@ -270,10 +297,80 @@
             window.scrollTo(0, 0);
         }
 
+        // Render Server Selection Cards
+        function renderServers() {
+            const container = document.getElementById('serverList');
+            container.innerHTML = servers.map((s, i) => `
+                <div class="server-card ${i === currentServerIndex ? 'active' : ''}" onclick="selectServer(${i})">
+                    <div>
+                        <div class="server-name">${s.name}</div>
+                        <div class="server-quality">${s.quality}</div>
+                    </div>
+                    <div class="server-status ${s.type === 'iframe' ? 'ads' : 'online'}">
+                        ${s.type === 'iframe' ? 'Ads' : 'Online'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Switch Server
+        function selectServer(index) {
+            currentServerIndex = index;
+            renderServers();
+            loadStream(true); // Force load immediately
+        }
+
+        // Load Video Stream
+        function loadStream(forceLoad = false) {
+            const server = servers[currentServerIndex];
+            const placeholder = document.getElementById('playerPlaceholder');
+            const video = document.getElementById('streamVideo');
+            const iframe = document.getElementById('streamIframe');
+            const adTop = document.getElementById('adTop');
+            const adBottom = document.getElementById('adBottom');
+            const btnFs = document.getElementById('btnFullscreen');
+
+            // If placeholder is visible and we haven't clicked play yet, do nothing (wait for user click)
+            if (!forceLoad && !placeholder.classList.contains('hidden')) return;
+
+            placeholder.classList.add('hidden');
+            
+            // Cleanup previous playback
+            if (hls) { hls.destroy(); hls = null; }
+            video.pause();
+            video.removeAttribute('src');
+            iframe.src = '';
+
+            if (server.type === 'iframe') {
+                video.style.display = 'none';
+                iframe.style.display = 'block';
+                iframe.src = server.url;
+                adTop.style.display = 'block';
+                adBottom.style.display = 'block';
+                btnFs.style.display = 'block';
+            } else {
+                iframe.style.display = 'none';
+                adTop.style.display = 'none';
+                adBottom.style.display = 'none';
+                btnFs.style.display = 'none';
+                video.style.display = 'block';
+                
+                if (Hls.isSupported()) {
+                    hls = new Hls();
+                    hls.loadSource(server.url);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = server.url;
+                    video.addEventListener('loadedmetadata', function() { video.play(); });
+                }
+            }
+        }
+
         async function fetchCalendar() {
             const cacheKey = `f1_cal_${CURRENT_SEASON}`;
             const cached = localStorage.getItem(cacheKey);
-            if (cached) { try { f1Calendar = JSON.parse(cached); autoSelectRace(); renderCountdown(); renderFullSchedule(); initPlayer(); } catch (e) {} }
+            if (cached) { try { f1Calendar = JSON.parse(cached); autoSelectRace(); renderCountdown(); renderFullSchedule(); } catch (e) {} }
 
             try {
                 const response = await fetch(`${API_BASE}/${CURRENT_SEASON}.json`);
@@ -302,7 +399,7 @@
                 });
 
                 localStorage.setItem(cacheKey, JSON.stringify(f1Calendar));
-                autoSelectRace(); renderCountdown(); renderFullSchedule(); startCountdown(); initPlayer();
+                autoSelectRace(); renderCountdown(); renderFullSchedule(); startCountdown();
             } catch (error) {
                 console.error('Failed to fetch calendar:', error);
                 if (!cached) document.getElementById('countdownContent').innerHTML = `<div class="error-message">⚠️ Failed to load F1 calendar data.<br>${error.message}</div>`;
@@ -384,33 +481,23 @@
             document.getElementById('fullScheduleContent').innerHTML = html;
         }
 
-        function initPlayer() {
-            const playBtn = document.getElementById('playButton');
-            const placeholder = document.getElementById('playerPlaceholder');
-            const video = document.getElementById('streamVideo');
-
-            if (!playBtn.hasListener) {
-                playBtn.addEventListener('click', () => {
-                    placeholder.classList.add('hidden');
-                    video.style.display = 'block';
-                    
-                    if (Hls.isSupported()) {
-                        hls = new Hls();
-                        hls.loadSource(DIRECT_M3U8_LINK);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
-                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                        video.src = DIRECT_M3U8_LINK;
-                        video.addEventListener('loadedmetadata', function() { video.play(); });
-                    }
-                });
-                playBtn.hasListener = true;
+        function toggleFullscreen() {
+            const container = document.getElementById('playerFrameContainer');
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) container.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
         function autoSelectRace() { const now = Date.now(); for (let i = 0; i < f1Calendar.length; i++) { if (now < new Date(f1Calendar[i].sessions.race).getTime() + (120 * 60 * 1000)) { selectedRaceIndex = i; break; } } }
         function startCountdown() { if (countdownInterval) clearInterval(countdownInterval); renderCountdown(); countdownInterval = setInterval(renderCountdown, 1000); }
 
+        // Init Play Button
+        document.getElementById('playButton').addEventListener('click', () => loadStream(true));
+
+        // Initialize
+        renderServers();
         fetchCalendar();
         fetchStandings();
     </script>
